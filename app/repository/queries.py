@@ -9,7 +9,7 @@ async def get_user_by_email(email: str):
         # rows.dict_row to generate dictionary as a result of query
         async with aconn.cursor(row_factory=rows.dict_row) as acur:
             sql = """
-                    SELECT email, hashed_password, money FROM users
+                    SELECT email, hashed_pswd FROM users
                     WHERE email = %s
                 """
             await acur.execute(sql, [email])

@@ -13,5 +13,10 @@ class UserFormSchema(BaseModel):
 
 class UserSchema(BaseModel):
     email: str
-    hashed_password: Annotated[str, Field(exclude=True)]
-    money: float
+    hashed_pswd: Annotated[str, Field(exclude=True)]
+
+
+class TokenSchema(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str

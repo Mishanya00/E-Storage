@@ -13,11 +13,11 @@ ALGORITHM = os.getenv("ALGORITHM")
 if not ALGORITHM:
     raise ValueError("ALGORITHM environment variable is not set")
 
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 if not ACCESS_TOKEN_EXPIRE_MINUTES:
     raise ValueError("ACCESS_TOKEN_EXPIRE_MINUTES environment variable is not set")
 
-REFRESH_TOKEN_EXPIRE_MINUTES = os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES")
+REFRESH_TOKEN_EXPIRE_MINUTES = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES"))
 if not REFRESH_TOKEN_EXPIRE_MINUTES:
     raise ValueError("REFRESH_TOKEN_EXPIRE_MINUTES environment variable is not set")
 

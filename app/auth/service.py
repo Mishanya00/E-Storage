@@ -7,7 +7,7 @@ from psycopg.errors import UniqueViolation
 import jwt
 
 from app.config import ALGORITHM, REFRESH_JWT_SECRET, ACCESS_JWT_SECRET, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES
-from app.auth.exceptions import UserExistException, UserNotExistException
+from app.auth.exceptions import UserExistException, UserNotExistException, IncorrectCredentialsException
 from app.repository import queries
 from app.auth.schemas import UserSchema, UserFormSchema
 
@@ -34,6 +34,16 @@ async def register_user(user: UserFormSchema):
         return True
     except UniqueViolation as e:
         raise UserExistException('User already exists') from e
+
+
+async def authenticate_user(email: str, password: str) -> UserSchema | None:
+    # user_data = await queries.get_user_by_email(email)
+    user = await get_user(email)
+    if not user:
+        raise UserNotExistException('User does not exist')
+    if not verify_password(password, user.hashed_pswd):
+        raise IncorrectCredentialsException('Incorrect password')
+    return user
 
 
 async def is_user_exist(email: str) -> bool:
