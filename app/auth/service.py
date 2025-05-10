@@ -1,9 +1,12 @@
 import hashlib
 import re
+from datetime import datetime, timezone, timedelta
 
 from fastapi import HTTPException, status
 from psycopg.errors import UniqueViolation
+import jwt
 
+from app.config import ALGORITHM, REFRESH_JWT_SECRET, ACCESS_JWT_SECRET, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES
 from app.auth.exceptions import UserExistException, UserNotExistException
 from app.repository import queries
 from app.auth.schemas import UserSchema, UserFormSchema
@@ -45,3 +48,26 @@ async def get_user(email: str) -> UserSchema | None:
     if user_data is None:
         raise UserNotExistException('User does not exist')
     return UserSchema(**user_data)
+
+
+def create_jwt(data: dict, expires_delta: timedelta, secret: str) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + expires_delta
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, secret, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    return dict(jwt.decode(token, ACCESS_JWT_SECRET, algorithms=[ALGORITHM]))
+
+
+def decode_refresh_token(token: str) -> dict:
+    return dict(jwt.decode(token, REFRESH_JWT_SECRET, algorithms=[ALGORITHM]))
+
+
+def create_access_token(data: dict) -> str:
+    return create_jwt(data, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES), ACCESS_JWT_SECRET)
+
+
+def create_refresh_token(data: dict) -> str:
+    return create_jwt(data, timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES), REFRESH_JWT_SECRET)
