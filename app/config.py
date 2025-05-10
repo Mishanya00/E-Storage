@@ -20,3 +20,7 @@ if not ACCESS_TOKEN_EXPIRE_MINUTES:
 REFRESH_TOKEN_EXPIRE_MINUTES = os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES")
 if not REFRESH_TOKEN_EXPIRE_MINUTES:
     raise ValueError("REFRESH_TOKEN_EXPIRE_MINUTES environment variable is not set")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")

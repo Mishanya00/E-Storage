@@ -5,11 +5,12 @@ from fastapi.responses import JSONResponse
 
 from exceptions import BaseAppException
 from app.auth.routes import auth_router
+from app.repository.init_db import create_tables
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # await create_tables()
+    await create_tables()
     print('E-Storage app is launched!')
 
     yield
