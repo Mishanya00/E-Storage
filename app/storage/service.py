@@ -1,7 +1,6 @@
 import shutil
 from pathlib import Path
-
-from fastapi import UploadFile
+# from werkzeug.utils import secure_filename # maybe to add for secure filenames
 
 
 UPLOAD_DIR = Path('/app/storage/uploads') # os.getcwd() returns /app
@@ -13,15 +12,16 @@ def create_email_folder(email: str):
     user_dir.mkdir(exist_ok=True)
 
 
-def background_save_file(upload_file: UploadFile, email: str):
+def background_save_file(filename: str, contents: bytes, email: str):
     """Wrapper for file-saving (for additional functionality in future)"""
-    save_uploaded_file(upload_file, email)
+    save_uploaded_file(filename, contents, email)
 
 
-def save_uploaded_file(upload_file: UploadFile, email: str) -> Path:
-    file_path = UPLOAD_DIR / email / upload_file.filename
+def save_uploaded_file(filename: str, contents: bytes, email: str) -> Path:
+    file_path = UPLOAD_DIR / email / filename
 
     with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(upload_file.file, buffer)
+        buffer.write(contents)
 
-    # return file_path
+    print(f"File {filename} saved to {file_path} for user {email}")
+    return file_path

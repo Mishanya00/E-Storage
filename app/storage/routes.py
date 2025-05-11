@@ -20,15 +20,18 @@ async def create_upload_file(background_tasks: BackgroundTasks,
          raise HTTPException(status_code=400, detail="File has no filename")
     else:
         try:
+            file_contents = await file.read()
+            original_filename = file.filename
+
             background_tasks.add_task(
                 background_save_file,
-                upload_file=file,
+                filename=original_filename,
+                contents=file_contents,
                 email=curr_user.email
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
         finally:
-            pass
-            # await file.close()
+            await file.close()
+            return {"message": f"file {file.filename} has been added to upload queue."}
 
-        return {"message": f"file {file.filename} has been added to upload queue."}
