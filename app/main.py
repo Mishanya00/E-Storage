@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from exceptions import BaseAppException
 from app.auth.routes import auth_router
 from app.repository.init_db import create_tables
+from app.storage.routes import storage_router
 
 
 @asynccontextmanager
@@ -21,6 +22,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth_router, prefix='/auth', tags=['auth'])
+app.include_router(storage_router, prefix='/storage', tags=['storage'])
 
 
 @app.exception_handler(BaseAppException)

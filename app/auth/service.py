@@ -10,6 +10,7 @@ from app.config import ALGORITHM, REFRESH_JWT_SECRET, ACCESS_JWT_SECRET, ACCESS_
 from app.auth.exceptions import UserExistException, UserNotExistException, IncorrectCredentialsException
 from app.repository import queries
 from app.auth.schemas import UserSchema, UserFormSchema
+from app.storage.service import create_email_folder
 
 
 EMAIL_PATTERN = r"\b[\w\-\.]+@(?:[\w-]+\.)+[\w\-]{2,4}\b"
@@ -31,6 +32,7 @@ async def register_user(user: UserFormSchema):
     hashed_password = hashlib.sha256(user.password.encode()).hexdigest()
     try:
         await queries.create_user(user.email, hashed_password)
+        create_email_folder(user.email)     # Maybe I should use BackgroundTasks
         return True
     except UniqueViolation as e:
         raise UserExistException('User already exists') from e
