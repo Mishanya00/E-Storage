@@ -10,8 +10,8 @@ from app.storage.service import background_save_file
 storage_router = APIRouter()
 
 
-@storage_router.post("/uploadfile")
-async def create_upload_file(background_tasks: BackgroundTasks,
+@storage_router.post("/upload_file")
+async def upload_file(background_tasks: BackgroundTasks,
                              curr_user: Annotated[UserSchema, Depends(get_current_user)],
                              file: Annotated[UploadFile, File()]):
     if not file:
@@ -27,7 +27,7 @@ async def create_upload_file(background_tasks: BackgroundTasks,
                 background_save_file,
                 filename=original_filename,
                 contents=file_contents,
-                email=curr_user.email
+                user=curr_user
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
@@ -35,3 +35,7 @@ async def create_upload_file(background_tasks: BackgroundTasks,
             await file.close()
             return {"message": f"file {file.filename} has been added to upload queue."}
 
+
+@storage_router.get("/get_files_list")
+async def create_upload_file(curr_user: Annotated[UserSchema, Depends(get_current_user)]):
+    pass

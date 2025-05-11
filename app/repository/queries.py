@@ -9,7 +9,7 @@ async def get_user_by_email(email: str):
         # rows.dict_row to generate dictionary as a result of query
         async with aconn.cursor(row_factory=rows.dict_row) as acur:
             sql = """
-                    SELECT email, hashed_pswd FROM users
+                    SELECT user_id, email, hashed_pswd FROM users
                     WHERE email = %s
                 """
             await acur.execute(sql, [email])
@@ -26,3 +26,20 @@ async def create_user(email: str, password_hash: str):
                 """
             await acur.execute(sql, [email, password_hash])
         await aconn.commit()
+
+
+async def add_file(user_id: int, filename: str, filepath: str, size:int, mimetype: str):
+    async with get_db_connection(DATABASE_URL) as aconn:
+        async with aconn.cursor() as acur:
+            sql = """
+                INSERT INTO files(user_id, filename, path, size, mime_type)
+                VALUES (%s, %s, %s, %s, %s)      
+            """
+            await acur.execute(sql, [user_id, filename, filepath, size, mimetype])
+        await aconn.commit()
+
+
+async def get_files_by_user(email: str, password_hash: str):
+    async with get_db_connection(DATABASE_URL) as aconn:
+        async with aconn.cursor() as acur:
+            pass

@@ -1,7 +1,9 @@
-import shutil
+import mimetypes
 from pathlib import Path
 # from werkzeug.utils import secure_filename # maybe to add for secure filenames
 
+from app.repository.queries import add_file
+from app.auth.schemas import UserSchema
 
 UPLOAD_DIR = Path('/app/storage/uploads') # os.getcwd() returns /app
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -12,9 +14,13 @@ def create_email_folder(email: str):
     user_dir.mkdir(exist_ok=True)
 
 
-def background_save_file(filename: str, contents: bytes, email: str):
+async def background_save_file(filename: str, contents: bytes, user: UserSchema):
     """Wrapper for file-saving (for additional functionality in future)"""
-    save_uploaded_file(filename, contents, email)
+    file_path = save_uploaded_file(filename, contents, user.email)
+    size = file_path.stat().st_size
+    mimetype = mimetypes.guess_type(file_path)[0]
+
+    await add_file(user.user_id, filename, file_path.as_posix(), size, mimetype)
 
 
 def save_uploaded_file(filename: str, contents: bytes, email: str) -> Path:

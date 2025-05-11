@@ -12,6 +12,7 @@ class UserFormSchema(BaseModel):
 
 
 class UserSchema(BaseModel):
+    user_id: Annotated[int, Field(ge=0)]
     email: str
     hashed_pswd: Annotated[str, Field(exclude=True)]
 
