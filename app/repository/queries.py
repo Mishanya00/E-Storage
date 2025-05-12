@@ -39,7 +39,13 @@ async def add_file(user_id: int, filename: str, filepath: str, size:int, mimetyp
         await aconn.commit()
 
 
-async def get_files_by_user(email: str, password_hash: str):
+async def get_files_by_user(user_id: int):
     async with get_db_connection(DATABASE_URL) as aconn:
-        async with aconn.cursor() as acur:
-            pass
+        async with aconn.cursor(row_factory=rows.dict_row) as acur:
+            sql = """
+                SELECT * FROM files
+                WHERE user_id = %s
+            """
+            await acur.execute(sql, [user_id])
+            records = await acur.fetchall()
+            return records

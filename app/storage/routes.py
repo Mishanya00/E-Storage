@@ -1,13 +1,19 @@
+import re
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, UploadFile, File, HTTPException, Depends
+from fastapi.responses import FileResponse
 
 from app.auth.dependencies import get_current_user
 from app.auth.schemas import UserSchema
 from app.storage.service import background_save_file
+from app.repository import queries
+from app.storage.schemas import FileSchema
 
 
 storage_router = APIRouter()
+
+ALLOWED_FILENAME_PATTERN = r'^[a-zA-Z0-9_\-\.]+$'
 
 
 @storage_router.post("/upload_file")
@@ -36,6 +42,27 @@ async def upload_file(background_tasks: BackgroundTasks,
             return {"message": f"file {file.filename} has been added to upload queue."}
 
 
-@storage_router.get("/get_files_list")
-async def create_upload_file(curr_user: Annotated[UserSchema, Depends(get_current_user)]):
+@storage_router.get("/get_files")
+async def get_files(curr_user: Annotated[UserSchema, Depends(get_current_user)]):
+    records = await queries.get_files_by_user(curr_user.user_id)
+    files = []
+
+    for record in records:
+        files.append(FileSchema(**record))
+
+    return files
+
+
+@storage_router.get("/get_file")
+async def get_file(curr_user: Annotated[UserSchema, Depends(get_current_user)]):
+    pass
+
+
+@storage_router.delete("/delete_file")
+async def delete_file(curr_user: Annotated[UserSchema, Depends(get_current_user)]):
+    pass
+
+
+@storage_router.put("/change_filename")
+async def change_filename(curr_user: Annotated[UserSchema, Depends(get_current_user)]):
     pass

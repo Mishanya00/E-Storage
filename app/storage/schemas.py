@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field
@@ -10,3 +11,4 @@ class FileSchema(BaseModel):
     path: str
     size: int
     mime_type: str
+    upload_time: datetime
